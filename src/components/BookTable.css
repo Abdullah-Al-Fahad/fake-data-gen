@@ -1,0 +1,50 @@
+/* Table styling */
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+/* Sticky table headers */
+.table thead th {
+  position: sticky;
+  top: 0;
+  background-color: white; /* Match the background color of your table header */
+  z-index: 1; /* Ensure the header is above the table rows */
+}
+
+/* Chevron icon styling */
+.chevron-icon {
+  transition: transform 0.3s ease;
+}
+
+.chevron-icon.rotate-up {
+  transform: rotate(180deg);
+}
+
+/* Expanded row styling */
+.expanded-row {
+  background-color: #f8f9fa;
+}
+
+.expanded-row td {
+  padding: 1rem;
+}
+
+.book-cover {
+  max-width: 80px; /* Reduce size */
+  height: auto;    /* Maintain aspect ratio */
+  margin-bottom: 1rem;
+  border-radius: 4px; /* Optional: Add rounded corners */
+}
+
+/* Reviews list styling */
+.reviews-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.reviews-list li {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #555;
+}

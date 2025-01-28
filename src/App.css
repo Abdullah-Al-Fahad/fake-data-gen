@@ -1,0 +1,69 @@
+/* Custom Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Sticky Toolbar with Shadow */
+.sticky-toolbar {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 1000;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+/* Button Hover Effects */
+.btn-primary {
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+/* Card Hover Effects */
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Table Styling */
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Spinner Animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner-border {
+  animation: spin 1s linear infinite;
+}
+
+/* Sticky Table Headers */
+.table {
+  overflow-y: auto; /* This is necessary if your table might go beyond the screen height */
+}
+
+.table thead th {
+  position: sticky;
+  top: 0; /* Sticks to the top of the container */
+  background-color: white; /* Match the table header background */
+  z-index: 2; /* Ensure it's above table rows */
+  border-bottom: 2px solid #dee2e6; /* Optional: Add a border for clarity */
+}
+
+.table thead th {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better visibility */
+}

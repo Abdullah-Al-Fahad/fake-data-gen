@@ -1,0 +1,51 @@
+/* BookGallery.css */
+
+/* Card styling */
+.book-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Book cover image styling */
+.book-cover {
+  max-width: 80px; /* Reduce size */
+  height: auto;    /* Maintain aspect ratio */
+  margin-bottom: 1rem;
+  border-radius: 4px; /* Optional: Add rounded corners */
+}
+
+
+/* Expanded content styling */
+.expanded-content {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #ddd;
+}
+
+/* Reviews list styling */
+.reviews-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.reviews-list li {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Chevron icon styling */
+.chevron-icon {
+  transition: transform 0.3s ease;
+}
+
+.chevron-icon.rotate-up {
+  transform: rotate(180deg);
+}

@@ -1,0 +1,97 @@
+/* Stylish White-Themed Controls Component */
+.controls-container {
+    padding: 25px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.controls-container .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.controls-container .form-select,
+.controls-container .form-control {
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease-in-out;
+}
+
+.controls-container .form-select:focus,
+.controls-container .form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+    background-color: white;
+}
+
+.controls-container .btn-secondary {
+    margin-top: 10px;
+    background-color: #6c757d;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.controls-container .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.controls-container .form-range {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.controls-container .form-range::-webkit-slider-runnable-track {
+    background-color: #e9ecef;
+    border-radius: 8px;
+    height: 6px;
+}
+
+.controls-container .form-range::-webkit-slider-thumb {
+    background-color: #007bff;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.controls-container .form-range::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.controls-container .form-range:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* Add some spacing between columns */
+.controls-container .col-md-3 {
+    padding: 0 12px;
+}
+
+.controls-container .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.controls-container .form-range + .form-label {
+    display: block;
+    margin-top: 10px;
+    font-size: 16px;
+    color: #007bff;
+    font-weight: bold;
+}
