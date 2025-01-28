@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { base, de, de_CH, en, fr, Faker } = require('@faker-js/faker');
+const { base, de, de_CH, en, fr, Faker } = require("@faker-js/faker");
 
 const app = express();
 app.use(cors());
@@ -8,9 +8,9 @@ app.use(express.json());
 
 // Define a custom locale if needed
 const customLocale = {
-  title: 'My Custom Locale',
+  title: "My Custom Locale",
   internet: {
-    domainSuffix: ['test'],
+    domainSuffix: ["test"],
   },
 };
 
@@ -19,10 +19,10 @@ const createFakerInstance = (language) => {
   let localeArray = [customLocale];
 
   switch (language) {
-    case 'de':
+    case "de":
       localeArray = [de_CH, de, ...localeArray];
       break;
-    case 'fr':
+    case "fr":
       localeArray = [fr, ...localeArray];
       break;
     default:
@@ -40,31 +40,31 @@ const createFakerInstance = (language) => {
 // Helper function for generating review sentences with context and variety
 const generateReviewSentence = (fakerInstance, language) => {
   const reviewTemplates = {
-    'en': [
+    en: [
       "The {{adjective}} use of {{noun}} makes this a {{adverb}} {{verb}} read.",
       "I was {{adverb}} {{verb}} by how the {{noun}} was handled.",
       "The writing by the author is surprisingly {{adjective}}.",
       "{{Adjective}} {{noun}}s, {{adverb}} {{verb}}ed, but {{adjective}} nonetheless.",
-      "While I enjoyed the {{noun}}, the {{adjective}} {{noun}} felt {{adverb}} executed."
+      "While I enjoyed the {{noun}}, the {{adjective}} {{noun}} felt {{adverb}} executed.",
     ],
-    'de': [
+    de: [
       "Die {{adjective}} Nutzung von {{noun}} macht das Buch zu einem {{adverb}} {{verb}}en Lesevergnügen.",
       "Ich war {{adverb}} {{verb}} darüber, wie das {{noun}} behandelt wurde.",
       "Das der Text von schreibende ist überraschend {{adjective}}.",
       "{{Adjective}} {{noun}}, {{adverb}} {{verb}}t, aber dennoch {{adjective}}.",
-      "Obwohl ich das {{noun}} genossen habe, schien das {{adjective}} {{noun}} {{adverb}} umgesetzt."
+      "Obwohl ich das {{noun}} genossen habe, schien das {{adjective}} {{noun}} {{adverb}} umgesetzt.",
     ],
-    'fr': [
+    fr: [
       "L'utilisation {{adjective}} de {{noun}} fait de ce livre une lecture {{adverb}} {{verb}}e.",
       "J'ai été {{adverb}} {{verb}} par la manière dont le {{noun}} a été traité.",
       "Le texte de personne écrivaine est surprenamment {{adjective}}.",
       "{{Adjective}} {{noun}}, {{adverb}} {{verb}}é, mais néanmoins {{adjective}}.",
-      "Bien que j'aie apprécié le {{noun}}, le {{adjective}} {{noun}} semblait {{adverb}} exécuté."
-    ]
+      "Bien que j'aie apprécié le {{noun}}, le {{adjective}} {{noun}} semblait {{adverb}} exécuté.",
+    ],
   };
 
   if (!reviewTemplates[language]) {
-    language = 'en'; // Default to English if language not found
+    language = "en"; // Default to English if language not found
   }
   const template = fakerInstance.helpers.arrayElement(reviewTemplates[language]);
   return fakerInstance.helpers.mustache(template, {
@@ -110,52 +110,63 @@ const generateLikes = (averageLikes, fakerInstance) => {
 
 // Helper function to capitalize the first letter of each word in a string
 const capitalizeWords = (str) => {
-  return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  return str
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 };
 
 // Helper function to generate a book
-const generateBook = (fakerInstance, language) => {
-  const title = capitalizeWords(`${fakerInstance.word.adjective()} ${fakerInstance.word.noun()}`);
+const generateBook = (fakerInstance, language, likes, reviews) => {
+  const title = capitalizeWords(
+    `${fakerInstance.word.adjective()} ${fakerInstance.word.noun()}`
+  );
   const author = fakerInstance.person.fullName();
   const publisher = fakerInstance.company.name();
   const isbn = fakerInstance.commerce.isbn();
 
-  const coverImage = `https://picsum.photos/seed/${fakerInstance.random.alphaNumeric(10)}/200/300`;
+  const coverImage = `https://picsum.photos/seed/${fakerInstance.random.alphaNumeric(
+    10
+  )}/200/300`;
 
   // Generate likes and reviews
-  const likes = generateLikes(5, fakerInstance); // Average likes fixed at 5 for this example
-  const reviews = generateReviews(3, fakerInstance, language); // Average reviews fixed at 3 for this example
+  const bookLikes = generateLikes(likes, fakerInstance);
+  const bookReviews = generateReviews(reviews, fakerInstance, language);
 
   return {
     isbn,
     title,
     author,
     publisher,
-    likes,
-    reviews,
+    likes: bookLikes,
+    reviews: bookReviews,
     coverImage,
   };
 };
 
-// Generate a fixed dataset of books based on a seed
-const generateDataset = (seed, language, totalBooks = 1000) => {
-  const fakerInstance = createFakerInstance(language);
-  fakerInstance.seed(seed);
-
-  return Array.from({ length: totalBooks }, () => generateBook(fakerInstance, language));
-};
-
 // API endpoint to fetch books
 app.get("/api/books", (req, res) => {
-  const { language = "en", seed = 42, page = 1, pageSize = 20 } = req.query;
+  const {
+    language = "en",
+    seed = 42,
+    likes = 5,
+    reviews = 5,
+    page = 1,
+    pageSize = 20,
+  } = req.query;
 
-  const dataset = generateDataset(Number(seed), language); // Generate the same dataset for the seed
-  const start = (page - 1) * pageSize;
-  const end = start + Number(pageSize);
+  const fakerInstance = createFakerInstance(language);
+  fakerInstance.seed(Number(seed)); // Ensure the seed remains consistent
 
-  const paginatedBooks = dataset.slice(start, end); // Slice the dataset for pagination
+  const totalBooks = 1000; // Total dataset size
+  const books = Array.from({ length: totalBooks }, () =>
+    generateBook(fakerInstance, language, Number(likes), Number(reviews))
+  );
 
-  res.json(paginatedBooks);
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + Number(pageSize);
+
+  res.json(books.slice(startIndex, endIndex));
 });
 
 // Start the server
