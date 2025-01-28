@@ -114,43 +114,48 @@ const capitalizeWords = (str) => {
 };
 
 // Helper function to generate a book
-const generateBook = (language, seed, likes, reviews) => {
-  const fakerInstance = createFakerInstance(language);
-  fakerInstance.seed(seed); // Set seed for deterministic results
-
+const generateBook = (fakerInstance, language) => {
   const title = capitalizeWords(`${fakerInstance.word.adjective()} ${fakerInstance.word.noun()}`);
   const author = fakerInstance.person.fullName();
   const publisher = fakerInstance.company.name();
   const isbn = fakerInstance.commerce.isbn();
 
-  const coverImage = `https://picsum.photos/seed/${seed}/200/300`;
+  const coverImage = `https://picsum.photos/seed/${fakerInstance.random.alphaNumeric(10)}/200/300`;
 
   // Generate likes and reviews
-  const generatedLikes = generateLikes(likes, fakerInstance);
-  const generatedReviews = generateReviews(reviews, fakerInstance, language);
+  const likes = generateLikes(5, fakerInstance); // Average likes fixed at 5 for this example
+  const reviews = generateReviews(3, fakerInstance, language); // Average reviews fixed at 3 for this example
 
   return {
     isbn,
     title,
     author,
     publisher,
-    likes: generatedLikes,
-    reviews: generatedReviews,
+    likes,
+    reviews,
     coverImage,
   };
 };
 
+// Generate a fixed dataset of books based on a seed
+const generateDataset = (seed, language, totalBooks = 1000) => {
+  const fakerInstance = createFakerInstance(language);
+  fakerInstance.seed(seed);
+
+  return Array.from({ length: totalBooks }, () => generateBook(fakerInstance, language));
+};
+
 // API endpoint to fetch books
 app.get("/api/books", (req, res) => {
-  const { language = "en", seed = 42, likes = 5, reviews = 3, page = 1 } = req.query;
+  const { language = "en", seed = 42, page = 1, pageSize = 20 } = req.query;
 
-  // Generate 20 books for the current page
-  const books = Array.from({ length: 20 }, (_, index) => {
-    const combinedSeed = Number(seed) + Number(page) * 100 + index; // Adjust seed to include page deterministically
-    return generateBook(language, combinedSeed, Number(likes), Number(reviews));
-  });
+  const dataset = generateDataset(Number(seed), language); // Generate the same dataset for the seed
+  const start = (page - 1) * pageSize;
+  const end = start + Number(pageSize);
 
-  res.json(books);
+  const paginatedBooks = dataset.slice(start, end); // Slice the dataset for pagination
+
+  res.json(paginatedBooks);
 });
 
 // Start the server
