@@ -1,0 +1,20 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@faker-js/faker": "^9.4.0",
+    "avris-generator": "^0.8.2",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "faker": "^5.5.3",
+    "isbn3": "^1.2.6"
+  }
+}
