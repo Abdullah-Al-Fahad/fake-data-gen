@@ -17,7 +17,7 @@ const customLocale = {
 // Function to create a Faker instance with custom locales and fallbacks
 const createFakerInstance = (language) => {
   let localeArray = [customLocale];
-  
+
   switch (language) {
     case 'de':
       localeArray = [de_CH, de, ...localeArray];
@@ -33,7 +33,7 @@ const createFakerInstance = (language) => {
   localeArray.push(base);
 
   return new Faker({
-    locale: localeArray
+    locale: localeArray,
   });
 };
 
@@ -91,7 +91,7 @@ const generateReviews = (averageReviews, fakerInstance, language) => {
     });
   }
 
-  if (Math.random() < partialReviewProbability) {
+  if (fakerInstance.number.float() < partialReviewProbability) {
     reviews.push({
       text: generateReviewSentence(fakerInstance, language),
       author: fakerInstance.person.fullName(),
@@ -102,10 +102,10 @@ const generateReviews = (averageReviews, fakerInstance, language) => {
 };
 
 // Helper function to generate likes
-const generateLikes = (averageLikes) => {
+const generateLikes = (averageLikes, fakerInstance) => {
   const baseLikes = Math.floor(averageLikes);
   const fractionalPart = averageLikes - baseLikes;
-  return baseLikes + (Math.random() < fractionalPart ? 1 : 0);
+  return baseLikes + (fakerInstance.number.float() < fractionalPart ? 1 : 0);
 };
 
 // Helper function to capitalize the first letter of each word in a string
@@ -116,16 +116,18 @@ const capitalizeWords = (str) => {
 // Helper function to generate a book
 const generateBook = (language, seed, likes, reviews) => {
   const fakerInstance = createFakerInstance(language);
-  fakerInstance.seed(seed);
+  fakerInstance.seed(seed); // Seed the Faker instance
+
   const title = capitalizeWords(`${fakerInstance.word.adjective()} ${fakerInstance.word.noun()}`);
   const author = fakerInstance.person.fullName();
   const publisher = fakerInstance.company.name();
   const isbn = fakerInstance.commerce.isbn();
 
-  const coverImage = `https://picsum.photos/seed/${seed}/200/300`; 
+  // Use a deterministic cover image URL based on the seed
+  const coverImage = `https://picsum.photos/seed/${seed}/200/300`;
 
-  // Generate likes and reviews
-  const generatedLikes = generateLikes(likes);
+  // Generate likes and reviews using the seeded Faker instance
+  const generatedLikes = generateLikes(likes, fakerInstance);
   const generatedReviews = generateReviews(reviews, fakerInstance, language);
 
   return {
