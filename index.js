@@ -37,33 +37,32 @@ const createFakerInstance = (language) => {
   });
 };
 
-// Review templates with placeholders
-const reviewTemplates = {
-  'en': [
-    "The {{adjective}} use of {{noun}} makes this a {{adverb}} {{verb}} read.",
-    "I was {{adverb}} {{verb}} by how the {{noun}} was handled.",
-    "The writing by author is surprisingly {{adjective}}.",
-    "{{Adjective}} {{noun}}s, {{adverb}} {{verb}}ed, but {{adjective}} nonetheless.",
-    "While I enjoyed the {{noun}}, the {{adjective}} {{noun}} felt {{adverb}} executed."
-  ],
-  'de': [
-    "Die {{adjective}} Nutzung von {{noun}} macht das Buch zu einem {{adverb}} {{verb}}en Lesevergnügen.",
-    "Ich war {{adverb}} {{verb}} darüber, wie das {{noun}} behandelt wurde.",
-    "Das der Text von schreibende ist überraschend {{adjective}}.",
-    "{{Adjective}} {{noun}}, {{adverb}} {{verb}}t, aber dennoch {{adjective}}.",
-    "Obwohl ich das {{noun}} genossen habe, schien das {{adjective}} {{noun}} {{adverb}} umgesetzt."
-  ],
-  'fr': [
-    "L'utilisation {{adjective}} de {{noun}} fait de ce livre une lecture {{adverb}} {{verb}}e.",
-    "J'ai été {{adverb}} {{verb}} par la manière dont le {{noun}} a été traité.",
-    "Le texte de personne écrivaine est surprenamment {{adjective}}.",
-    "{{Adjective}} {{noun}}, {{adverb}} {{verb}}é, mais néanmoins {{adjective}}.",
-    "Bien que j'aie apprécié le {{noun}}, le {{adjective}} {{noun}} semblait {{adverb}} exécuté."
-  ]
-};
-
 // Helper function for generating review sentences with context and variety
 const generateReviewSentence = (fakerInstance, language) => {
+  const reviewTemplates = {
+    'en': [
+      "The {{adjective}} use of {{noun}} makes this a {{adverb}} {{verb}} read.",
+      "I was {{adverb}} {{verb}} by how the {{noun}} was handled.",
+      "The writing by the author is surprisingly {{adjective}}.",
+      "{{Adjective}} {{noun}}s, {{adverb}} {{verb}}ed, but {{adjective}} nonetheless.",
+      "While I enjoyed the {{noun}}, the {{adjective}} {{noun}} felt {{adverb}} executed."
+    ],
+    'de': [
+      "Die {{adjective}} Nutzung von {{noun}} macht das Buch zu einem {{adverb}} {{verb}}en Lesevergnügen.",
+      "Ich war {{adverb}} {{verb}} darüber, wie das {{noun}} behandelt wurde.",
+      "Das der Text von schreibende ist überraschend {{adjective}}.",
+      "{{Adjective}} {{noun}}, {{adverb}} {{verb}}t, aber dennoch {{adjective}}.",
+      "Obwohl ich das {{noun}} genossen habe, schien das {{adjective}} {{noun}} {{adverb}} umgesetzt."
+    ],
+    'fr': [
+      "L'utilisation {{adjective}} de {{noun}} fait de ce livre une lecture {{adverb}} {{verb}}e.",
+      "J'ai été {{adverb}} {{verb}} par la manière dont le {{noun}} a été traité.",
+      "Le texte de personne écrivaine est surprenamment {{adjective}}.",
+      "{{Adjective}} {{noun}}, {{adverb}} {{verb}}é, mais néanmoins {{adjective}}.",
+      "Bien que j'aie apprécié le {{noun}}, le {{adjective}} {{noun}} semblait {{adverb}} exécuté."
+    ]
+  };
+
   if (!reviewTemplates[language]) {
     language = 'en'; // Default to English if language not found
   }
@@ -74,15 +73,15 @@ const generateReviewSentence = (fakerInstance, language) => {
     adverb: fakerInstance.word.adverb(),
     verb: fakerInstance.word.verb(),
     noun: fakerInstance.word.noun(),
-    author: fakerInstance.person.fullName()
+    author: fakerInstance.person.fullName(),
   });
 };
 
-// Helper function to generate reviews with varied tones
+// Helper function to generate reviews with seeded randomness
 const generateReviews = (averageReviews, fakerInstance, language) => {
   const reviews = [];
   const fullReviews = Math.floor(averageReviews);
-  const partialReviewProbability = averageReviews - fullReviews;
+  const fractionalPart = averageReviews - fullReviews;
 
   for (let i = 0; i < fullReviews; i++) {
     reviews.push({
@@ -91,7 +90,8 @@ const generateReviews = (averageReviews, fakerInstance, language) => {
     });
   }
 
-  if (fakerInstance.number.float() < partialReviewProbability) {
+  // Use Faker's seeded random to determine partial reviews
+  if (fakerInstance.number.float({ min: 0, max: 1 }) < fractionalPart) {
     reviews.push({
       text: generateReviewSentence(fakerInstance, language),
       author: fakerInstance.person.fullName(),
@@ -105,7 +105,7 @@ const generateReviews = (averageReviews, fakerInstance, language) => {
 const generateLikes = (averageLikes, fakerInstance) => {
   const baseLikes = Math.floor(averageLikes);
   const fractionalPart = averageLikes - baseLikes;
-  return baseLikes + (fakerInstance.number.float() < fractionalPart ? 1 : 0);
+  return baseLikes + (fakerInstance.number.float({ min: 0, max: 1 }) < fractionalPart ? 1 : 0);
 };
 
 // Helper function to capitalize the first letter of each word in a string
@@ -116,17 +116,16 @@ const capitalizeWords = (str) => {
 // Helper function to generate a book
 const generateBook = (language, seed, likes, reviews) => {
   const fakerInstance = createFakerInstance(language);
-  fakerInstance.seed(seed); // Seed the Faker instance
+  fakerInstance.seed(seed); // Set seed for deterministic results
 
   const title = capitalizeWords(`${fakerInstance.word.adjective()} ${fakerInstance.word.noun()}`);
   const author = fakerInstance.person.fullName();
   const publisher = fakerInstance.company.name();
   const isbn = fakerInstance.commerce.isbn();
 
-  // Use a deterministic cover image URL based on the seed
   const coverImage = `https://picsum.photos/seed/${seed}/200/300`;
 
-  // Generate likes and reviews using the seeded Faker instance
+  // Generate likes and reviews
   const generatedLikes = generateLikes(likes, fakerInstance);
   const generatedReviews = generateReviews(reviews, fakerInstance, language);
 
@@ -147,7 +146,7 @@ app.get("/api/books", (req, res) => {
 
   // Generate 20 books for the current page
   const books = Array.from({ length: 20 }, (_, index) => {
-    const combinedSeed = Number(seed) + Number(page) + index;
+    const combinedSeed = Number(seed) + Number(page) * 100 + index; // Adjust seed to include page deterministically
     return generateBook(language, combinedSeed, Number(likes), Number(reviews));
   });
 
