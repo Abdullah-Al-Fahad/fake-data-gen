@@ -21,7 +21,7 @@ const App = () => {
   const fetchBooks = useCallback(async (page) => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:3001/api/books', {
+      const response = await axios.get('https://fake-data-gen.onrender.com/api/books', {
         params: {
           language: region.split('_')[0],
           seed,
@@ -38,11 +38,11 @@ const App = () => {
     }
   }, [seed, region, avgLikes, avgReviews]);
 
-  useEffect(() => {
+  const handleGenerate = () => {
     setBooks([]);
     setPage(0);
     fetchBooks(0);
-  }, [seed, region, avgLikes, avgReviews, fetchBooks]);
+  };
 
   const handleScroll = () => {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
@@ -94,6 +94,7 @@ const App = () => {
               setAvgLikes={setAvgLikes}
               avgReviews={avgReviews}
               setAvgReviews={setAvgReviews}
+              onGenerate={handleGenerate}
             />
           </Col>
           <Col md={4} className="text-end">

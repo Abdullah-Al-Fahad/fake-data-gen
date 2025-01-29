@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import './control.css'; // Import the CSS file
 
-const Controls = ({ region, setRegion, seed, setSeed, avgLikes, setAvgLikes, avgReviews, setAvgReviews }) => {
+const Controls = ({ region, setRegion, seed, setSeed, avgLikes, setAvgLikes, avgReviews, setAvgReviews, onGenerate }) => {
   return (
     <Form className="controls-container">
       <Row>
@@ -42,6 +42,13 @@ const Controls = ({ region, setRegion, seed, setSeed, avgLikes, setAvgLikes, avg
             <Form.Label>Average Reviews</Form.Label>
             <Form.Control type="number" step="0.1" value={avgReviews} onChange={(e) => setAvgReviews(Number(e.target.value))} />
           </Form.Group>
+        </Col>
+      </Row>
+      <Row>
+        <Col className="text-center">
+          <Button variant="primary" onClick={onGenerate}>
+            Generate Books
+          </Button>
         </Col>
       </Row>
     </Form>
